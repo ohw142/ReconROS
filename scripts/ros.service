@@ -1,0 +1,13 @@
+[Unit]
+Description=Initialize reconos
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/home/xilinx/Development/run_ros.sh
+User=xilinx
+Group=xilinx
+
+[Install]
+WantedBy=default.target
+

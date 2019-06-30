@@ -1,0 +1,64 @@
+---
+- name: Ensure /opt/reconos exists
+  file:
+    path: /opt/reconos
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+  become: True
+  tags:
+    - reconos_install
+
+- name: Copy kernel object to /opt/reconos
+  copy:
+    src: mreconos.ko
+    dest: /opt/reconos/
+    owner: root
+    group: root
+    mode: 0700
+  become: True
+  tags:
+    - reconos_install
+
+- name: Copy bitstream to /opt/reconos
+  copy:
+    src: bitstream_full_static.bit
+    dest: /opt/reconos/
+    owner: root
+    group: root
+    mode: 0600
+  become: True
+  tags:
+    - reconos_install
+
+- name: Copy init script to /opt/reconos
+  copy:
+    src: init_reconos.sh
+    dest: /opt/reconos/
+    owner: root
+    group: root
+    mode: 0700
+  become: True
+  tags:
+    - reconos_install
+
+- name: Copy reconos service to /etc/systemd/system
+  copy:
+    src: reconos.service
+    dest: /etc/systemd/system/
+    owner: root
+    group: root
+    mode: 0644
+  become: True
+  tags:
+    - reconos_install
+
+- name: Enable reconos service
+  systemd:
+    name: reconos
+    daemon_reload: True
+    enabled: True
+  become: True
+  tags:
+    - reconos_install

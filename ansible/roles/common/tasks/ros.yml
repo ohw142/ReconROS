@@ -1,0 +1,74 @@
+---
+- name: Check if rosdep is already initialized
+  stat: path=/etc/ros/rosdep/sources.list.d/20-default.list
+  register: rosdep_init
+  tags:
+    - ros_install
+
+- name: Add ROS key
+  apt_key:
+    keyserver: "hkp://ha.pool.sks-keyservers.net:80"
+    id: 421C365BD9FF1F717815A3895523BAEEB01FA116
+  become: True
+  tags:
+    - ros_install
+
+- name: Add ROS repository
+  apt_repository: 
+    repo: "deb http://packages.ros.org/ros/ubuntu xenial main"
+#    filename: "ros-latest.list"
+  become: True
+  tags:
+    - ros_install
+
+- name: Install ROS Kinetic ros base
+  apt:
+    pkg: [ 'ros-kinetic-ros-base' ]
+    state: present
+    update_cache: yes
+  tags:
+    - packages
+    - ros_install
+  become: True
+
+- name: Initialize rosdep
+  shell: rosdep init
+  when: rosdep_init.stat.exists == False
+  become: True
+  tags:
+    - ros_install
+
+- name: Update rosdep
+  shell: rosdep update
+  tags:
+    - ros_install
+
+- name: Add ros to bashrc
+  lineinfile:
+    line: "source /opt/ros/kinetic/setup.bash"
+    dest: "/home/xilinx/.bashrc"
+  tags:
+    - ros_install
+
+- name: Set ROS_MASTER in bashrc
+  lineinfile:
+    line: "export ROS_MASTER_URI=http://techinf-ceg-047.cs.upb.de:12543/"
+    dest: "/home/xilinx/.bashrc"
+  tags:
+    - ros_install
+
+- name: Set ROS_IP in bashrc
+  lineinfile:
+    line: "export ROS_IP={{ ansible_default_ipv4.address }}"
+    dest: "/home/xilinx/.bashrc"
+  tags:
+    - ros_install
+
+- name: Install dependencies for building packages
+  apt: 
+    pkg: [ 'python-rosinstall', 'python-rosinstall-generator', 'python-wstool', 'build-essential', 'python-catkin-tools' ]
+    state: present
+  tags:
+    - packages
+    - ros_install
+  become: True

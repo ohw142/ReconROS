@@ -1,0 +1,9 @@
+---
+- name: Install pynq node
+  hosts: pynq
+  remote_user: xilinx
+  become_method: sudo
+  become_user: root
+
+  roles:
+    - common

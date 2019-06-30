@@ -1,0 +1,11 @@
+[Unit]
+Description=Initialize reconos
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/reconos/init_reconos.sh
+
+[Install]
+WantedBy=default.target
+

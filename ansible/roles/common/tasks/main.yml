@@ -1,0 +1,32 @@
+---
+- name: Set hostname
+# Does not work because systemd-hostnamed does not run
+#  hostname:
+#    name: "{{ inventory_hostname_short }}"
+  copy:
+    content: "{{ inventory_hostname_short }}"
+    dest: /etc/hostname
+  tags:
+    - install
+  when: not inventory_hostname is match('(\d{1,3}\.){3}\d{1,3}')
+  become: True
+
+- name: Copy devicetree.dtb
+  copy:
+    src: devicetree.dtb
+    dest: /boot/
+    owner: root
+    group: root
+    mode: 0755
+  become: True
+  tags:
+    - install
+
+- include: ros.yml
+- include: reconos.yml
+
+- name: Reboot
+  reboot:
+  become: True
+  tags:
+    - reboot
